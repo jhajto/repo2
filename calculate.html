@@ -1,0 +1,163 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<style type="text/css">
+			.body {
+				
+			}
+			.name {
+				display: inline;
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 1em;
+			}
+			.line {
+				margin: 10px;
+				max-width: 400px;
+				text-align: right; 
+			}
+			.forButton {
+				display: inline;
+				margin: 0 0 0 10px;
+				padding: 5px 10px;
+				border-radius: 0;
+				background-color: #0cae60;
+				color: #fff;
+				text-transform: uppercase;
+				font-size: 0.8em;
+				font-family: Arial, Helvetica, sans-serif;
+				cursor: pointer;
+			}
+			.buttons {
+				display: block;
+				max-width: 400px;
+				margin: 20px 0 0;
+				text-align: right;
+			}
+			.numbers {
+				border-radius: 0;
+				border: 1px solid #d3d3d3;
+				padding: 3px 10px;
+				font-size: 16px;
+				margin: 0 10px;
+			}
+			#result {
+				display: block;
+				margin: 20px 10px;
+				font-family: Arial, Helvetica, sans-serif;
+			}
+		</style>
+		<script>
+			function fromTen(system, arg) {
+				var result = 0;
+				var op = arg;
+				var arr = [];
+				var i = 0;
+
+				while (op != 0) {
+					arr[i] = op % system;
+					op = parseInt(op/system);
+					i++;
+				}
+				result = arr.reverse().join("");
+	
+				return result;
+			}
+
+			function toTen(system, arg) {
+				var result = 0;
+
+				var arr = arg.toString().split("").reverse();
+				
+				for (i = 0; i < arr.length; i++) {
+					result = result + parseFloat(arr[i]) * Math.pow(system, i);
+				}
+
+				return result;
+			}
+
+			function calculate(primarySystem, targetSystem, number) {
+				var part;
+				if (primarySystem === 10) {
+					part = primarySystem;
+				} else {
+					part = toTen(primarySystem, number);
+				}
+				if (targetSystem === 10) {
+					return part;
+				} else {
+					return fromTen(targetSystem, part);
+				}
+			}
+
+			function checkNumber(number, primarySystem) {
+				var arr = number.split("");
+				var system = parseFloat(primarySystem);
+
+				for(i = 0; i < arr.length; i++) {
+					if (arr[i] >= system)
+						return false;
+				}
+				
+				return true;
+			}
+
+			function info(txt, red) {
+				var resultDiv = document.getElementById("result");
+				if (red) {
+					resultDiv.style.color = "red";
+				} else {
+					resultDiv.style.color = "black";
+				}
+				resultDiv.innerHTML += txt;
+			}
+
+			function getNumbers() {
+				document.getElementById("result").innerHTML = "";
+				var primarySystem = document.getElementById("primarySystem").value;
+				var targetSystem = document.getElementById("targetSystem").value;
+				var number = document.getElementById("number").value;
+				var solution;
+
+				if (primarySystem === '' || isNaN(primarySystem)) {
+					info("Enter the primary system.", true);
+				} else if (targetSystem === ''  || isNaN(targetSystem)) {
+					info("Enter the target system.", true);
+				} else if (number === ''  || isNaN(number)) {
+					info("Enter the number.", true); 
+				} else if (!checkNumber(number, primarySystem) ) {
+					info("The number must belong to the primary system.", true);
+				} else {
+					var isNegative = false;
+					var num = parseFloat(number);
+					if (num < 0) {
+						isNegative = true;
+						num = -num;
+					}
+					solution = calculate(parseFloat(primarySystem), parseFloat(targetSystem), num);
+					if (isNegative) {
+						solution = -solution;
+					}
+					info("The solution is " + solution + ".", false);
+				}
+				
+			}
+
+			function resetInputs() {
+				document.getElementById("primarySystem").value = "";
+				document.getElementById("targetSystem").value = "";
+				document.getElementById("number").value = "";
+				document.getElementById("result").innerHTML = "";				
+			}
+		</script>
+	</head>
+	<body>
+			<div class="line"><div class="name">Primary system:</div> <input type="text" id="primarySystem" class="numbers"></div>
+			<div class="line"><div class="name">Target system:</div> <input type="text" id="targetSystem" class="numbers"></div>
+			<div class="line"><div class="name">Number:</div> <input type="text" id="number" class="numbers"></div>
+			<div class="buttons">
+				<div onclick="getNumbers()" class="forButton">Calculate</div>
+				<div type="button" onclick="resetInputs()" class="forButton">Reset</div>
+			</div>
+			<div id="result"></div>
+	</body>
+</html>
